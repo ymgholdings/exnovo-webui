@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-09-24T17:40:00Z",
+  "three_version": "0.186.0",
+  "routes": [
+    { "route": "/", "mockup": "dashboard.png", "mismatch": 0.245, "status": "PENDING_T1" },
+    { "route": "/canvas", "mockup": "roundtable_canvas.png", "mismatch": 0.312, "status": "PENDING_T2" },
+    { "route": "/design", "mockup": "design_preview.png", "mismatch": 0.189, "status": "PENDING_T3" }
+  ]
+}
