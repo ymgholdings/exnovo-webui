@@ -1,47 +1,33 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: dark;
+@layer base {
+  body {
+    background-color: #0B111E;
+    color: #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    overflow-x: hidden;
+  }
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #02040A !important;
-  color: #f1f5f9;
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  overflow-x: hidden;
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-/* Sci-Fi Notched / Chamfered Panels matching Mockups */
-.chamfer-panel {
-  background: rgba(8, 14, 26, 0.85);
-  clip-path: polygon(
-    0 12px, 
-    12px 0, 
-    calc(100% - 12px) 0, 
-    100% 12px, 
-    100% calc(100% - 12px), 
-    calc(100% - 12px) 100%, 
-    12px 100%, 
-    0 calc(100% - 12px)
-  );
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.15) inset;
+.glass-panel-gold {
+  background: rgba(20, 16, 10, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(255, 215, 0, 0.05);
 }
 
-.chamfer-panel-gold {
-  background: rgba(20, 16, 8, 0.85);
-  clip-path: polygon(
-    0 12px, 
-    12px 0, 
-    calc(100% - 12px) 0, 
-    100% 12px, 
-    100% calc(100% - 12px), 
-    calc(100% - 12px) 100%, 
-    12px 100%, 
-    0 calc(100% - 12px)
-  );
-  border: 1px solid rgba(229, 193, 88, 0.4);
-  box-shadow: 0 0 15px rgba(229, 193, 88, 0.15) inset;
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.glow-gold {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }

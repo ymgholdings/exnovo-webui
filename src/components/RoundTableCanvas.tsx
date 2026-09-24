@@ -1,127 +1,131 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, Text } from '@react-three/drei';
+import { OrbitControls, Line } from '@react-three/drei';
 import * as THREE from 'three';
 
-interface AgentNodeProps {
-  position: [number, number, number];
-  rotationY: number;
+interface AgentNode {
+  id: string;
   name: string;
   role: string;
-  model: string;
+  position: [number, number, number];
   color: string;
+  hasSonar: boolean;
 }
 
-function HolographicKnightAvatar({ position, rotationY, name, role, model, color }: AgentNodeProps) {
-  const groupRef = useRef<THREE.Group>(null);
-  const headRef = useRef<THREE.Mesh>(null);
+const AGENTS: AgentNode[] = [
+  { id: 'arthur', name: 'ARTHUR', role: 'Orchestrator • Kimi K3', position: [0, 1.2, 0], color: '#00f0ff', hasSonar: true },
+  { id: 'lancelot', name: 'LANCELOT', role: 'Lead Dev • MiMo V2.6', position: [2.5, 0.5, 1.2], color: '#ffd700', hasSonar: true },
+  { id: 'tristan', name: 'TRISTAN', role: 'Mathematics • Tencent Hy4', position: [2.2, 0.5, -1.8], color: '#3b82f6', hasSonar: false },
+  { id: 'gawain', name: 'GAWAIN', role: 'Frontend • Qwen Coder', position: [-2.2, 0.5, 1.8], color: '#10b981', hasSonar: true },
+  { id: 'galahad', name: 'GALAHAD', role: 'Security Gate • Nimble', position: [-2.5, 0.5, -1.2], color: '#ef4444', hasSonar: true },
+];
 
-  useFrame((state) => {
-    if (headRef.current) {
-      headRef.current.position.y = 1.1 + Math.sin(state.clock.elapsedTime * 2 + position[0]) * 0.03;
+function HolographicNode({ node }: { node: AgentNode }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (meshRef.current) {
+      meshRef.current.rotation.y = t * 0.5;
+    }
+    if (ringRef.current && node.hasSonar) {
+      const scale = 1 + (Math.sin(t * 3) + 1) * 0.25;
+      ringRef.current.scale.set(scale, scale, scale);
+      (ringRef.current.material as THREE.MeshBasicMaterial).opacity = 0.8 - (scale - 1);
     }
   });
 
   return (
-    <group position={position} rotation={[0, rotationY, 0]} ref={groupRef}>
-      {/* Base Sitting Ring */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
-        <ringGeometry args={[0.65, 0.72, 32]} />
-        <meshBasicMaterial color={color} side={THREE.DoubleSide} transparent opacity={0.8} />
+    <group position={node.position}>
+      <mesh ref={meshRef}>
+        <icosahedronGeometry args={[0.35, 2]} />
+        <meshBasicMaterial color={node.color} wireframe transparent opacity={0.85} />
       </mesh>
 
-      {/* Seated Torso Wireframe */}
-      <mesh position={[0, 0.4, 0]}>
-        <cylinderGeometry args={[0.3, 0.25, 0.8, 12, 4, true]} />
-        <meshBasicMaterial color={color} wireframe transparent opacity={0.7} />
+      <mesh>
+        <sphereGeometry args={[0.42, 16, 16]} />
+        <meshBasicMaterial color={node.color} transparent opacity={0.15} />
       </mesh>
 
-      {/* Floating Holographic Head */}
-      <mesh ref={headRef} position={[0, 1.1, 0]}>
-        <sphereGeometry args={[0.22, 16, 16]} />
-        <meshBasicMaterial color={color} wireframe transparent opacity={0.85} />
-      </mesh>
-
-      {/* Individual Terminal Screen Facing Agent */}
-      <mesh position={[0, 0.6, -0.75]} rotation={[-0.2, 0, 0]}>
-        <planeGeometry args={[0.8, 0.5]} />
-        <meshBasicMaterial color={color} wireframe side={THREE.DoubleSide} transparent opacity={0.4} />
-      </mesh>
-
-      {/* Agent Data Badge */}
-      <group position={[0, 1.7, 0]} rotation={[0, -rotationY, 0]}>
-        <Text fontSize={0.18} color={color} anchorX="center" anchorY="middle">
-          {name.toUpperCase()}
-        </Text>
-        <Text position={[0, -0.18, 0]} fontSize={0.11} color="#94A3B8" anchorX="center" anchorY="middle">
-          {`${role} • ${model}`}
-        </Text>
-      </group>
+      {node.hasSonar && (
+        <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.5, 0.55, 32]} />
+          <meshBasicMaterial color={node.color} transparent opacity={0.5} side={THREE.DoubleSide} />
+        </mesh>
+      )}
     </group>
   );
 }
 
-function HolographicRoundTable() {
-  const mainRingRef = useRef<THREE.Mesh>(null);
+function TableGrid() {
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
+        <ringGeometry args={[0.1, 3.2, 64]} />
+        <meshBasicMaterial color="#00f0ff" transparent opacity={0.12} side={THREE.DoubleSide} />
+      </mesh>
 
-  useFrame((_, delta) => {
-    if (mainRingRef.current) {
-      mainRingRef.current.rotation.z += delta * 0.05;
-    }
-  });
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.09, 0]}>
+        <ringGeometry args={[3.15, 3.2, 64]} />
+        <meshBasicMaterial color="#00f0ff" transparent opacity={0.6} side={THREE.DoubleSide} />
+      </mesh>
+
+      <gridHelper args={[20, 40, '#00f0ff', '#1e293b']} position={[0, -0.5, 0]} />
+    </group>
+  );
+}
+
+function ConnectionEdges() {
+  const arthurPos = AGENTS[0].position;
 
   return (
     <group>
-      {/* Outer Holographic Table Rim */}
-      <mesh ref={mainRingRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.21, 0]}>
-        <ringGeometry args={[2.8, 2.92, 64]} />
-        <meshBasicMaterial color="#00F0FF" side={THREE.DoubleSide} transparent opacity={0.6} />
-      </mesh>
-
-      {/* Grid Floor */}
-      <gridHelper args={[10, 20, "#00F0FF", "#0A1224"]} position={[0, -0.22, 0]} />
-
-      {/* Center Curved Orchestrator Screen */}
-      <mesh position={[0, 0.5, -0.2]}>
-        <cylinderGeometry args={[1.4, 1.4, 1.0, 32, 1, true, -Math.PI / 3, (2 * Math.PI) / 3]} />
-        <meshBasicMaterial color="#00F0FF" side={THREE.DoubleSide} wireframe transparent opacity={0.35} />
-      </mesh>
+      {AGENTS.slice(1).map((agent) => {
+        const points: [number, number, number][] = [
+          arthurPos,
+          [(arthurPos[0] + agent.position[0]) / 2, 0.8, (arthurPos[2] + agent.position[2]) / 2],
+          agent.position
+        ];
+        return (
+          <Line
+            key={agent.id}
+            points={points}
+            color={agent.color}
+            lineWidth={1.5}
+            transparent
+            opacity={0.6}
+            dashed
+            dashScale={5}
+            dashSize={0.2}
+            dashGap={0.1}
+          />
+        );
+      })}
     </group>
   );
 }
 
-export default function RoundTableCanvas() {
-  const agents = [
-    { name: 'Arthur', role: 'Orchestrator', model: 'Kimi K3', color: '#00F0FF', pos: [0, 0, -2.2], rot: 0 },
-    { name: 'Lancelot', role: 'Lead Dev', model: 'MiMo V2.6', color: '#E5C158', pos: [2.0, 0, -0.8], rot: -Math.PI / 3 },
-    { name: 'Tristan', role: 'Math/Physics', model: 'Tencent Hy4', color: '#00A8FF', pos: [1.6, 0, 1.5], rot: (-2 * Math.PI) / 3 },
-    { name: 'Gawain', role: 'Frontend', model: 'Qwen Coder', color: '#00E676', pos: [-1.6, 0, 1.5], rot: (2 * Math.PI) / 3 },
-    { name: 'Galahad', role: 'Security Gate', model: 'Bespoke Nimble', color: '#FF1744', pos: [-2.0, 0, -0.8], rot: Math.PI / 3 },
-  ];
-
+export function RoundTableCanvas() {
   return (
-    <div className="w-full h-full min-h-[500px] bg-[#02040A] relative overflow-hidden rounded-xl">
-      <div className="absolute top-4 left-4 z-10 font-mono text-xs text-cyan-400 tracking-widest flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+    <div className="w-full h-full min-h-[550px] relative bg-[#0B111E] rounded-xl overflow-hidden border border-cyan-500/20 shadow-[0_0_30px_rgba(0,240,255,0.15)]">
+      <div className="absolute top-4 left-4 z-10 text-xs font-mono text-cyan-400 tracking-wider flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded border border-cyan-500/30">
+        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
         HOLOGRAPHIC VIEWPORT: KING ARTHUR'S ROUND TABLE
       </div>
-      <Canvas>
-        <PerspectiveCamera makeDefault position={[0, 3.8, 5.8]} fov={50} />
-        <OrbitControls enableZoom={true} maxPolarAngle={Math.PI / 2.05} minDistance={2.5} maxDistance={10} />
-        <ambientLight intensity={0.9} />
-        <HolographicRoundTable />
-        {agents.map((agent, index) => (
-          <HolographicKnightAvatar
-            key={index}
-            position={agent.pos as [number, number, number]}
-            rotationY={agent.rot}
-            name={agent.name}
-            role={agent.role}
-            model={agent.model}
-            color={agent.color}
-          />
+
+      <Canvas camera={{ position: [0, 4.5, 7.5], fov: 45 }} dpr={[1, 2]}>
+        <color attach="background" args={['#0B111E']} />
+        <ambientLight intensity={0.5} />
+        <TableGrid />
+        <ConnectionEdges />
+        {AGENTS.map((agent) => (
+          <HolographicNode key={agent.id} node={agent} />
         ))}
+        <OrbitControls enablePan={true} maxPolarAngle={Math.PI / 2.1} minDistance={3} maxDistance={15} />
       </Canvas>
     </div>
   );
 }
+
+export default RoundTableCanvas;
