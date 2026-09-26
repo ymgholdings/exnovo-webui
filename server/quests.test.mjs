@@ -112,3 +112,11 @@ test('cancelled quests are archived, idle, carry the maintenance note, and stay 
   assert.equal(s.successRate, 50);
   assert.equal(s.causes.spec, 1);
 });
+
+test('pipeline markers decide the cause', () => {
+  const base = { spec: 'write a simple add(a, b) function with unit tests', test_len: 10 };
+  assert.equal(classifyFailure({ ...base, trace_head: '[aborted] AuthenticationError: 401' }), 'aborted');
+  assert.equal(classifyFailure({ ...base, trace_head: '[tests-failed] pytest failed' }), 'tests');
+  assert.equal(classifyFailure({ ...base, trace_head: '[sandbox] image unavailable' }), 'sandbox');
+  assert.equal(classifyFailure({ ...base, error_trace: '[no-tests] none' }), 'no-tests');
+});

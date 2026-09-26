@@ -60,11 +60,18 @@ export const CAUSES = {
   spec: 'Spec was a placeholder or a file path, not a task',
   'no-tests': 'Implementer never produced tests, so review rejected every attempt',
   review: 'Rejected in code review',
+  tests: 'Code failed its own tests on every attempt',
+  aborted: 'Run crashed or was interrupted (API, auth or process error)',
 };
+
+// Markers the Agentic OS pipeline now writes at the start of error_trace.
+const MARKERS = { '[sandbox]': 'sandbox', '[no-tests]': 'no-tests', '[review]': 'review', '[tests-failed]': 'tests', '[aborted]': 'aborted' };
 
 export function classifyFailure(row) {
   const trace = String(row.error_trace ?? '');
   const spec = String(row.spec ?? '').trim();
+  const head = String(row.trace_head ?? trace).trimStart();
+  for (const [mark, cause] of Object.entries(MARKERS)) if (head.startsWith(mark)) return cause;
   if (/Temporary failure in name resolution|No matching distribution found|Could not find a version that satisfies/i.test(trace)) return 'sandbox';
   if (spec.length < 25 || /^(\/|~\/|\.\/)\S+$/.test(spec) || /^your task description$/i.test(spec)) return 'spec';
   if (!Number(row.test_len ?? 0) && /test coverage|lack of tests?|no tests|missing tests/i.test(trace)) return 'no-tests';
