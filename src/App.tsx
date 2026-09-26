@@ -1,128 +1,99 @@
-import { useState } from 'react';
+import React from 'react';
 import RoundTableCanvas from './components/RoundTableCanvas';
-import { LayoutDashboard, Sword, Tv, BrainCircuit, LineChart, Shield, Cpu } from 'lucide-react';
+import RevenueEngineCanvas from './components/RevenueEngineCanvas';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'quests' | 'media' | 'advanced' | 'strategy'>('dashboard');
-
+export function App() {
   return (
-    <div className="min-h-screen bg-[#020408] text-slate-100 flex font-mono overflow-hidden">
-      {/* LEFT NAVIGATION BAR (As seen in Dashboard Overview.jpeg) */}
-      <nav className="w-20 bg-[#050B14] border-r border-cyan-500/20 flex flex-col items-center py-6 gap-8 z-20">
-        <div className="p-2 bg-cyan-950/80 border border-cyan-400/40 rounded-xl glow-cyan">
-          <Shield className="w-6 h-6 text-cyan-400" />
+    <div className="min-h-screen bg-[#040711] text-slate-100 flex flex-col p-4 md:p-6 gap-5">
+      {/* HUD Header */}
+      <header className="flex items-center justify-between pb-3 border-b border-cyan-500/30">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded bg-cyan-500/10 border border-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)]">
+            <span className="text-cyan-400 font-bold font-sci-fi text-base">EX</span>
+          </div>
+          <h1 className="text-lg md:text-xl font-sci-fi font-bold tracking-wider text-cyan-400 glow-cyan-text">
+            EXNOVO AGENTIC OS: <span className="text-slate-300 font-normal">ADVANCED MATERIALS & STRATEGY</span>
+          </h1>
         </div>
-
-        <div className="flex flex-col gap-6 w-full items-center">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`flex flex-col items-center gap-1 w-full py-2 transition-all border-l-2 ${
-              activeTab === 'dashboard' ? 'border-cyan-400 text-cyan-400 bg-cyan-950/30' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-[9px]">DASHBOARD</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('quests')}
-            className={`flex flex-col items-center gap-1 w-full py-2 transition-all border-l-2 ${
-              activeTab === 'quests' ? 'border-amber-400 text-amber-400 bg-amber-950/30' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <Sword className="w-5 h-5" />
-            <span className="text-[9px]">QUESTS</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('media')}
-            className={`flex flex-col items-center gap-1 w-full py-2 transition-all border-l-2 ${
-              activeTab === 'media' ? 'border-cyan-400 text-cyan-400 bg-cyan-950/30' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <Tv className="w-5 h-5" />
-            <span className="text-[9px]">MEDIA</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('advanced')}
-            className={`flex flex-col items-center gap-1 w-full py-2 transition-all border-l-2 ${
-              activeTab === 'advanced' ? 'border-cyan-400 text-cyan-400 bg-cyan-950/30' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <BrainCircuit className="w-5 h-5" />
-            <span className="text-[9px]">ADVANCED</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('strategy')}
-            className={`flex flex-col items-center gap-1 w-full py-2 transition-all border-l-2 ${
-              activeTab === 'strategy' ? 'border-amber-400 text-amber-400 bg-amber-950/30' : 'border-transparent text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            <LineChart className="w-5 h-5" />
-            <span className="text-[9px]">STRATEGY</span>
-          </button>
+        
+        <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex items-center gap-2 bg-slate-900/90 px-3 py-1.5 rounded border border-cyan-500/30">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-slate-300">GATEWAY: 127.0.0.1:4000</span>
+          </div>
         </div>
-      </nav>
+      </header>
 
-      {/* RIGHT CONTENT WORKSPACE */}
-      <div className="flex-1 flex flex-col p-6 gap-6 overflow-y-auto">
-        {/* TOP BANNER */}
-        <header className="flex justify-between items-center border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold tracking-widest text-slate-100">
-              EXNOVO AGENTIC OS: <span className="text-cyan-400">{activeTab.toUpperCase()} VIEW</span>
-            </h1>
+      {/* Main 3-Column HUD Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1">
+        {/* Left Column: Advanced Materials Lab */}
+        <aside className="lg:col-span-3 hud-panel rounded-xl p-4 flex flex-col gap-4">
+          <div className="hud-corner hud-corner-tl" />
+          <div className="hud-corner hud-corner-tr" />
+          <div className="hud-corner hud-corner-bl" />
+          <div className="hud-corner hud-corner-br" />
+
+          <div className="text-xs font-sci-fi text-cyan-400 font-bold tracking-widest border-b border-cyan-500/20 pb-2">
+            ADVANCED MATERIALS LAB
           </div>
+          <div className="text-sm font-semibold text-slate-200">Aero-Composite Structural Net</div>
 
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-              <Cpu className="w-4 h-4 text-cyan-400" />
-              <span className="text-slate-400">Gateway:</span>
-              <span className="text-emerald-400">127.0.0.1:4000</span>
-            </div>
-          </div>
-        </header>
-
-        {/* ACTIVE VIEW RENDERING */}
-        {activeTab === 'dashboard' && (
-          <div className="flex-1 flex flex-col gap-6">
-            {/* Stat Counters matching Dashboard Overview.jpeg */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-[#080E1A] border border-cyan-500/30 p-4 rounded-xl flex flex-col items-center justify-center">
-                <span className="text-xs text-cyan-400">ACTIVE QUESTS</span>
-                <span className="text-3xl font-bold text-slate-100">3</span>
+          <div className="flex-1 min-h-[200px] bg-slate-950/80 rounded-lg border border-cyan-500/20 p-3 flex flex-col justify-between font-mono">
+            <div className="text-[11px] text-cyan-300">Topology Matrix: Active</div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-400">High Density:</span>
+                <span className="text-cyan-400 font-bold">65%</span>
               </div>
-              <div className="bg-[#080E1A] border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center">
-                <span className="text-xs text-amber-400">TOTAL KNIGHTS</span>
-                <span className="text-3xl font-bold text-slate-100">12</span>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Resilience:</span>
+                <span className="text-emerald-400 font-bold">High</span>
               </div>
-              <div className="bg-[#080E1A] border border-amber-500/30 p-4 rounded-xl flex flex-col items-center justify-center">
-                <span className="text-xs text-amber-400">REVENUE STRATEGY</span>
-                <span className="text-2xl font-bold text-amber-300">STABLE</span>
-              </div>
-              <div className="bg-[#080E1A] border border-cyan-500/30 p-4 rounded-xl flex flex-col items-center justify-center">
-                <span className="text-xs text-cyan-400">SYSTEM STATUS</span>
-                <span className="text-2xl font-bold text-emerald-400">OPTIMAL</span>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Thermal Rate:</span>
+                <span className="text-amber-400 font-bold">1.5pm</span>
               </div>
             </div>
-
-            {/* Central Viewport */}
-            <div className="flex-1 min-h-[500px] border border-cyan-500/20 rounded-xl overflow-hidden relative">
-              <RoundTableCanvas />
-            </div>
           </div>
-        )}
 
-        {activeTab !== 'dashboard' && (
-          <div className="flex-1 flex items-center justify-center border border-dashed border-slate-800 rounded-xl">
-            <span className="text-slate-500 text-sm">
-              Module [{activeTab.toUpperCase()}] ready for GLTF Mesh & Shader staging.
-            </span>
+          <div className="p-3 bg-cyan-950/30 rounded-lg border border-cyan-500/30 text-xs font-mono space-y-1">
+            <div className="text-cyan-400 font-bold font-sci-fi">PROPERTIES</div>
+            <div className="text-slate-300">Format: Taxe Node Grid</div>
+            <div className="text-slate-300">Status: Nominal</div>
           </div>
-        )}
+        </aside>
+
+        {/* Center Column: Round Table Holographic Viewport */}
+        <main className="lg:col-span-6 flex flex-col min-h-[580px]">
+          <RoundTableCanvas />
+        </main>
+
+        {/* Right Column: Revenue Strategy Engine */}
+        <aside className="lg:col-span-3 hud-panel-gold rounded-xl p-4 flex flex-col gap-4">
+          <div className="hud-corner hud-corner-tl" style={{ borderColor: '#ffd700' }} />
+          <div className="hud-corner hud-corner-tr" style={{ borderColor: '#ffd700' }} />
+          <div className="hud-corner hud-corner-bl" style={{ borderColor: '#ffd700' }} />
+          <div className="hud-corner hud-corner-br" style={{ borderColor: '#ffd700' }} />
+
+          <div className="text-xs font-sci-fi text-amber-400 font-bold tracking-widest border-b border-amber-500/20 pb-2 glow-gold-text">
+            REVENUE STRATEGY ENGINE
+          </div>
+
+          <div className="text-xs font-mono text-amber-200">
+            QUEST: ECONOMIC SaaS DEV PLATFORM
+          </div>
+
+          {/* 3D Isometric Bar Graph Viewport */}
+          <RevenueEngineCanvas />
+
+          <div className="p-3 bg-slate-950/80 rounded-lg border border-amber-500/30 text-xs font-mono">
+            <div className="text-amber-400 font-bold font-sci-fi">Sir Lancelot Analysis</div>
+            <div className="text-slate-300 text-[11px] mt-1">Market Data: Predictive growth trend active.</div>
+          </div>
+        </aside>
       </div>
     </div>
   );
 }
+
+export default App;
