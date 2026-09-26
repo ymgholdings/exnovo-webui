@@ -1,0 +1,16 @@
+{
+  "extensions": [
+    {
+      "id": "exnovo",
+      "name": "Exnovo Agentic OS",
+      "scripts": ["exnovo.js"],
+      "stylesheets": ["exnovo.css"],
+      "sidecar": {
+        "type": "loopback",
+        "origin": "http://127.0.0.1:17901",
+        "health_path": "/health",
+        "proxy_auth": "token-v1"
+      }
+    }
+  ]
+}

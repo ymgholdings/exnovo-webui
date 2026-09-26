@@ -31,11 +31,41 @@
     title.insertBefore(mark, title.firstChild);
   }
 
+  var PANELS = ['roundtable', 'library'];
   function loadPanels() {
-    if (document.querySelector('script[data-exnovo="roundtable"]')) return;
-    var s = document.createElement('script');
-    s.src = '/extensions/roundtable.js?v=' + window.Exnovo.version; s.defer = true; s.dataset.exnovo = 'roundtable';
-    document.body.appendChild(s);
+    PANELS.forEach(function (name) {
+      if (document.querySelector('script[data-exnovo="' + name + '"]')) return;
+      var s = document.createElement('script');
+      s.src = '/extensions/' + name + '.js?v=' + window.Exnovo.version; s.defer = true; s.dataset.exnovo = name;
+      document.body.appendChild(s);
+    });
+  }
+
+  /** Add a rail button for an Exnovo page. Leaving for any other rail view hands the highlight back to core. */
+  function addRailButton(id, label, svg, onOpen) {
+    var rail = document.querySelector('nav.rail'); if (!rail || rail.querySelector('[data-exnovo="' + id + '"]')) return;
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'rail-btn'; b.dataset.exnovo = id; b.title = label; b.setAttribute('aria-label', label);
+    b.innerHTML = svg;
+    b.addEventListener('click', onOpen);
+    // Stable order regardless of which panel script loads first.
+    var order = PANELS.indexOf(id); b.dataset.exOrder = String(order);
+    var after = [].slice.call(rail.querySelectorAll('.rail-btn[data-ex-order]')).filter(function (x) { return +x.dataset.exOrder > order; })[0];
+    rail.insertBefore(b, after || rail.querySelector('.rail-spacer') || null);
+    rail.addEventListener('click', function (e) { if (!e.target.closest('[data-exnovo="' + id + '"]')) b.classList.remove('active'); });
+  }
+
+  /** Show WebUI's plugin page area and give the caller an empty root element to render into. */
+  function mountPage(id, label) {
+    if (typeof window.switchPluginPage !== 'function') return Promise.resolve(null);
+    return Promise.resolve(window.switchPluginPage(null, '/extensions/blank.html#' + id, label)).then(function () {
+      var c = document.getElementById('pluginPageContainer'); if (!c) return null;
+      c.innerHTML = '';
+      var root = document.createElement('div'); root.className = 'exrt-root'; root.dataset.page = id; c.appendChild(root);
+      document.querySelectorAll('.rail-btn.active').forEach(function (x) { x.classList.remove('active'); });
+      var mine = document.querySelector('.rail-btn[data-exnovo="' + id + '"]'); if (mine) mine.classList.add('active');
+      return root;
+    });
   }
 
   function boot() {
@@ -50,7 +80,9 @@
   }
 
   window.Exnovo = window.Exnovo || {};
-  window.Exnovo.version = '0.2.0';
+  window.Exnovo.version = '0.3.0';
+  window.Exnovo.addRailButton = addRailButton;
+  window.Exnovo.mountPage = mountPage;
   /** One-shot pulse for state changes (respects reduced motion via CSS). */
   window.Exnovo.pulse = function (el) {
     if (!el) return; el.classList.remove('ex-pulse'); void el.offsetWidth; el.classList.add('ex-pulse');

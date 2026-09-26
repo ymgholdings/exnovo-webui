@@ -167,16 +167,12 @@
   // ---- mount into WebUI's plugin page area ----
   function open(ev) {
     if (ev) { ev.preventDefault(); ev.stopPropagation(); }
-    if (typeof switchPluginPage !== 'function') return;
-    Promise.resolve(switchPluginPage(null, '/extensions/blank.html', 'Round Table')).then(function () {
-      var c = document.getElementById('pluginPageContainer'); if (!c) return;
-      c.innerHTML = '';
-      var root = document.createElement('div'); root.className = 'exrt-root'; c.appendChild(root);
+    if (!window.Exnovo || !window.Exnovo.mountPage) return;
+    window.Exnovo.mountPage('roundtable', 'Round Table').then(function (root) {
+      if (!root) return;
       root.addEventListener('click', onClick);
       root.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.exrt-seat')) { e.preventDefault(); onClick(e); } });
       state.root = root; state.lastEvent = null; state.prev = {};
-      document.querySelectorAll('.rail-btn.active').forEach(function (b) { b.classList.remove('active'); });
-      var mine = document.querySelector('.rail-btn[data-exnovo="roundtable"]'); if (mine) mine.classList.add('active');
       root.innerHTML = '<div class="exrt"><p class="exrt-foot">Loading the Round Table…</p></div>';
       refresh().then(function () { render(); state.tasks.forEach(function (t) { state.prev[t.id] = t.status; }); });
       stop(); state.timer = setInterval(tick, POLL_MS);
@@ -184,16 +180,9 @@
   }
 
   function addRailButton() {
-    var rail = document.querySelector('nav.rail'); if (!rail || rail.querySelector('[data-exnovo="roundtable"]')) return;
-    var b = document.createElement('button');
-    b.type = 'button'; b.className = 'rail-btn'; b.dataset.exnovo = 'roundtable';
-    b.title = 'Round Table'; b.setAttribute('aria-label', 'Round Table');
-    b.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8z"/><path d="M5 21h14"/></svg>';
-    b.addEventListener('click', open);
-    var spacer = rail.querySelector('.rail-spacer');
-    rail.insertBefore(b, spacer || null);
-    // Leaving for any other rail view hands the highlight back to core.
-    rail.addEventListener('click', function (e) { if (!e.target.closest('[data-exnovo="roundtable"]')) b.classList.remove('active'); });
+    if (!window.Exnovo || !window.Exnovo.addRailButton) return;
+    window.Exnovo.addRailButton('roundtable', 'Round Table',
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8z"/><path d="M5 21h14"/></svg>', open);
   }
 
   window.ExnovoRoundTable = { open: open, _state: state };
