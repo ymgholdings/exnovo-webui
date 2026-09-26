@@ -31,7 +31,7 @@
     title.insertBefore(mark, title.firstChild);
   }
 
-  var PANELS = ['roundtable', 'library'];
+  var PANELS = ['deck', 'roundtable', 'library'];
   function loadPanels() {
     PANELS.forEach(function (name) {
       if (document.querySelector('script[data-exnovo="' + name + '"]')) return;
@@ -52,7 +52,11 @@
     var order = PANELS.indexOf(id); b.dataset.exOrder = String(order);
     var after = [].slice.call(rail.querySelectorAll('.rail-btn[data-ex-order]')).filter(function (x) { return +x.dataset.exOrder > order; })[0];
     rail.insertBefore(b, after || rail.querySelector('.rail-spacer') || null);
-    rail.addEventListener('click', function (e) { if (!e.target.closest('[data-exnovo="' + id + '"]')) b.classList.remove('active'); });
+    rail.addEventListener('click', function (e) {
+      if (e.target.closest('[data-exnovo="' + id + '"]')) return;
+      b.classList.remove('active');
+      if (!e.target.closest('[data-exnovo]')) document.body.classList.remove('ex-page-open');
+    });
   }
 
   /** Show WebUI's plugin page area and give the caller an empty root element to render into. */
@@ -62,14 +66,27 @@
       var c = document.getElementById('pluginPageContainer'); if (!c) return null;
       c.innerHTML = '';
       var root = document.createElement('div'); root.className = 'exrt-root'; root.dataset.page = id; c.appendChild(root);
+      document.body.classList.add('ex-page-open');
       document.querySelectorAll('.rail-btn.active').forEach(function (x) { x.classList.remove('active'); });
       var mine = document.querySelector('.rail-btn[data-exnovo="' + id + '"]'); if (mine) mine.classList.add('active');
       return root;
     });
   }
 
+  // Leaving an Exnovo page by any route (rail, programmatic switchPanel, links) restores the core sidebar.
+  function watchMainView() {
+    var main = document.querySelector('main.main'); if (!main || !('MutationObserver' in window)) return;
+    new MutationObserver(function () {
+      if (!main.classList.contains('showing-plugin')) {
+        document.body.classList.remove('ex-page-open');
+        document.querySelectorAll('.rail-btn[data-exnovo].active').forEach(function (x) { x.classList.remove('active'); });
+      }
+    }).observe(main, { attributes: true, attributeFilter: ['class'] });
+  }
+
   function boot() {
     loadPanels();
+    watchMainView();
     if (!register()) {                     // core may load after us: retry briefly
       var n = 0, t = setInterval(function () { if (register() || ++n > 40) clearInterval(t); }, 100);
     }
@@ -80,7 +97,7 @@
   }
 
   window.Exnovo = window.Exnovo || {};
-  window.Exnovo.version = '0.3.0';
+  window.Exnovo.version = '0.4.0';
   window.Exnovo.addRailButton = addRailButton;
   window.Exnovo.mountPage = mountPage;
   /** One-shot pulse for state changes (respects reduced motion via CSS). */
