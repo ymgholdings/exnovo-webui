@@ -17,11 +17,12 @@ const SEATS = {
   testing_failed: ['complete', 'complete', 'mediating', 'blocked'],
   completed:      ['complete', 'complete', 'complete', 'complete'],
   failed:         ['blocked', 'idle', 'idle', 'idle'],
+  cancelled:      ['idle', 'idle', 'idle', 'idle'],
 };
 
 const BUCKET = {
   pending: 'active', decomposed: 'active', implemented: 'active',
-  testing_failed: 'mediation', completed: 'archived', failed: 'archived',
+  testing_failed: 'mediation', completed: 'archived', failed: 'archived', cancelled: 'archived',
 };
 
 export const OPEN_BUCKETS = new Set(['active', 'mediation']);
@@ -53,6 +54,29 @@ export function failureReason(trace, max = 240) {
   return last.length > max ? last.slice(0, max - 1).trimEnd() + '…' : last || null;
 }
 
+/** Failure causes, most specific first. Deterministic: regexes over the spec and the error trace. */
+export const CAUSES = {
+  sandbox: 'Test sandbox could not install dependencies (no network)',
+  spec: 'Spec was a placeholder or a file path, not a task',
+  'no-tests': 'Implementer never produced tests, so review rejected every attempt',
+  review: 'Rejected in code review',
+};
+
+export function classifyFailure(row) {
+  const trace = String(row.error_trace ?? '');
+  const spec = String(row.spec ?? '').trim();
+  if (/Temporary failure in name resolution|No matching distribution found|Could not find a version that satisfies/i.test(trace)) return 'sandbox';
+  if (spec.length < 25 || /^(\/|~\/|\.\/)\S+$/.test(spec) || /^your task description$/i.test(spec)) return 'spec';
+  if (!Number(row.test_len ?? 0) && /test coverage|lack of tests?|no tests|missing tests/i.test(trace)) return 'no-tests';
+  return 'review';
+}
+
+/** The maintenance note appended when a quest was cancelled by hand. */
+export function cancelReason(trace) {
+  const m = String(trace ?? '').match(/\[exnovo-maintenance [^\]]*\]\s*([^\n]+)/);
+  return m ? m[1].trim() : null;
+}
+
 /** Agentic OS stores `timestamp without time zone` in UTC; a naive string must not be read as local time. */
 export function asUtc(v) {
   if (typeof v !== 'string') return v;
@@ -80,7 +104,9 @@ export function toQuest(row, now = Date.now()) {
     createdAt: Number.isNaN(created.getTime()) ? null : created.toISOString(),
     stale,
     summary: excerpt(row.spec),
-    failure: status === 'failed' || status === 'testing_failed' ? failureReason(row.error_trace) : null,
+    failure: status === 'cancelled' ? cancelReason(row.error_trace)
+      : status === 'failed' || status === 'testing_failed' ? failureReason(row.error_trace) : null,
+    cause: status === 'failed' || status === 'testing_failed' ? classifyFailure(row) : null,
     seats: ROSTER.map((k, i) => ({ knight: k.id, state: seats[i] })),
   };
 }
@@ -98,6 +124,8 @@ export function summarize(quests, now = Date.now()) {
     mediation: count((q) => q.status === 'mediation' && !q.stale),
     completed: done,
     failed,
+    cancelled: count((q) => q.rawStatus === 'cancelled'),
+    causes: Object.fromEntries(Object.keys(CAUSES).map((c) => [c, count((q) => q.rawStatus === 'failed' && q.cause === c)])),
     successRate: finished ? Math.round((done / finished) * 100) : null,
     knights: ROSTER.length,
     lastActivityAt: newest || null,

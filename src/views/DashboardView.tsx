@@ -1,4 +1,4 @@
-import { ActivityFeed, Panel, RoundTable, StatCard, type AgentState, type RoundTableQuest } from '../components/ds';
+import { ActivityFeed, Button, Panel, RoundTable, StatCard, type AgentState, type RoundTableQuest } from '../components/ds';
 import { useAgent, type Quest, type Knight } from '../lib/agentStore';
 import { ago, useNow } from '../lib/time';
 import { navigateTo } from '../lib/useRoute';
@@ -53,7 +53,7 @@ export function DashboardView() {
         <StatCard label="Total Knights" value={summary.knights} tone="regal"
           delta={roster.map((k) => k.name).join(' · ')} />
         <StatCard label="Success Rate" value={summary.successRate === null ? '—' : `${summary.successRate}%`} tone="regal"
-          delta={`${summary.completed} completed · ${summary.failed} failed`}
+          delta={`${summary.completed} completed · ${summary.failed} failed · ${summary.cancelled ?? 0} cancelled`}
           alert={summary.successRate !== null && summary.successRate < 50 ? 'warn' : undefined} />
         <StatCard label="System Status" value={online ? 'ONLINE' : 'OFFLINE'} tone="aether"
           delta={online ? `database up · stream live` : health.db === 'down' ? 'database unreachable' : 'stream reconnecting'}
@@ -78,6 +78,24 @@ export function DashboardView() {
           <div className="panel-head"><h2>Recent activity</h2></div>
           {activity.length ? <ActivityFeed items={activity} now={now} /> : <p className="panel-note">No quests recorded yet.</p>}
         </Panel>
+        {summary.failed > 0 && (
+          <Panel as="section" aria-label="Why runs fail" className="dash-causes">
+            <div className="panel-head">
+              <h2>Why runs fail</h2>
+              <span className="panel-note">{summary.failed} failed quest{summary.failed === 1 ? '' : 's'} by root cause</span>
+            </div>
+            <ul className="cause-list">
+              {Object.entries(summary.causes ?? {}).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]).map(([c, n]) => (
+                <li key={c}>
+                  <span className="cause-bar" style={{ width: `${Math.round((n / summary.failed) * 100)}%` }} />
+                  <span className="cause-label">{snapshot.causes?.[c] ?? c}</span>
+                  <b className="cause-n">{n}</b>
+                </li>
+              ))}
+            </ul>
+            <Button variant="ghost" onClick={() => navigateTo('/quests?status=failed')}>See failed quests</Button>
+          </Panel>
+        )}
       </div>
     </>
   );

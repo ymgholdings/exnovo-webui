@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { titleFromSpec, toQuest, summarize, fingerprint, ROSTER, asUtc, excerpt, failureReason } from './quests.mjs';
+import { titleFromSpec, toQuest, summarize, fingerprint, ROSTER, asUtc, excerpt, failureReason, classifyFailure, cancelReason } from './quests.mjs';
 
 test('title skips rule lines and trims', () => {
   assert.equal(titleFromSpec('====\n\n  Deploy hermes-webui  \nmore'), 'Deploy hermes-webui');
@@ -87,4 +87,28 @@ test('failure reason is the last meaningful trace line, only for failures', () =
 test('failed after iterating blocks the Debugger; failed with no iterations blocks Arthur', () => {
   assert.deepEqual(toQuest({ id: 1, status: 'failed', iteration_count: 3 }).seats.map((s) => s.state), ['complete', 'complete', 'blocked', 'idle']);
   assert.deepEqual(toQuest({ id: 2, status: 'failed', iteration_count: 0 }).seats.map((s) => s.state), ['blocked', 'idle', 'idle', 'idle']);
+});
+
+test('failure causes', () => {
+  const long = 'write a simple add(a, b) function with unit tests';
+  assert.equal(classifyFailure({ spec: long, error_trace: 'ERROR: No matching distribution found for pytest' }), 'sandbox');
+  assert.equal(classifyFailure({ spec: '/tmp/spec.txt', error_trace: 'x' }), 'spec');
+  assert.equal(classifyFailure({ spec: 'your task description', error_trace: 'x' }), 'spec');
+  assert.equal(classifyFailure({ spec: long, error_trace: 'the lack of test coverage is critical', test_len: 0 }), 'no-tests');
+  assert.equal(classifyFailure({ spec: long, error_trace: 'the lack of test coverage is critical', test_len: 900 }), 'review');
+  assert.equal(classifyFailure({ spec: long, error_trace: 'security issues' }), 'review');
+});
+
+test('cancelled quests are archived, idle, carry the maintenance note, and stay out of the success rate', () => {
+  const trace = 'old trace\n\n[exnovo-maintenance 2026-09-26] Cancelled: abandoned test run. Previous status: pending.';
+  assert.equal(cancelReason(trace), 'Cancelled: abandoned test run. Previous status: pending.');
+  const q = toQuest({ id: 1, status: 'cancelled', error_trace: trace });
+  assert.equal(q.status, 'archived');
+  assert.equal(q.stale, false);
+  assert.equal(q.failure, 'Cancelled: abandoned test run. Previous status: pending.');
+  assert.ok(q.seats.every((s) => s.state === 'idle'));
+  const s = summarize([q, toQuest({ id: 2, status: 'completed' }), toQuest({ id: 3, status: 'failed', spec: '/tmp/x' })]);
+  assert.equal(s.cancelled, 1);
+  assert.equal(s.successRate, 50);
+  assert.equal(s.causes.spec, 1);
 });

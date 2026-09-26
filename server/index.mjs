@@ -5,7 +5,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { toQuest, summarize, fingerprint, ROSTER, asUtc } from './quests.mjs';
+import { toQuest, summarize, fingerprint, ROSTER, asUtc, CAUSES } from './quests.mjs';
 
 // timestamp without time zone (OID 1114) holds UTC in Agentic OS: parse it as UTC, not server-local time.
 pg.types.setTypeParser(1114, (v) => new Date(asUtc(v)));
@@ -31,7 +31,7 @@ async function poll() {
   try {
     const rows = FIXTURE
       ? JSON.parse(await readFile(FIXTURE, 'utf8'))
-      : (await pool.query('SELECT id, spec, status, iteration_count, created_at, right(error_trace, 2000) AS error_trace FROM tasks ORDER BY created_at DESC LIMIT 500')).rows;
+      : (await pool.query('SELECT id, spec, status, iteration_count, created_at, right(error_trace, 2000) AS error_trace, length(test_output) AS test_len FROM tasks ORDER BY created_at DESC LIMIT 500')).rows;
     const now = Date.now();
     quests = rows.map((r) => toQuest(r, now));
     dbOk = true;
@@ -49,7 +49,7 @@ async function poll() {
 }
 
 const health = () => ({ db: dbOk ? 'up' : 'down', error: dbOk ? null : dbError, lastPollAt, clients: clients.size });
-const snapshot = () => ({ quests, summary: summarize(quests), roster: ROSTER, health: health() });
+const snapshot = () => ({ quests, summary: summarize(quests), roster: ROSTER, causes: CAUSES, health: health() });
 
 function broadcast(event, data) {
   const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;

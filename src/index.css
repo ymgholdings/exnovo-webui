@@ -47,6 +47,13 @@
 .ex-check__count { margin-left: auto; font-family: var(--font-data); font-size: 12px; color: var(--ink-3); }
 .ex-check { width: 100%; }
 .quests-more { display: flex; justify-content: center; }
+.quest-cause { margin: 0; color: var(--ink); display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+.dash-causes { grid-column: 1 / -1; display: grid; gap: var(--space-4); justify-items: start; }
+.cause-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); width: 100%; }
+.cause-list li { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-3); border: 1px solid var(--line); }
+.cause-bar { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--status-critical) 18%, transparent); pointer-events: none; }
+.cause-label, .cause-n { position: relative; }
+.cause-n { font-family: var(--font-data); color: var(--ink); }
 .rt-legend { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
 
 @media (max-width: 1100px) {

@@ -4,13 +4,14 @@ import { statusWord, useAgent, type Quest } from '../lib/agentStore';
 import { navigateTo, useRoute } from '../lib/useRoute';
 import { ago, useNow } from '../lib/time';
 
-type Bucket = 'active' | 'mediation' | 'stalled' | 'completed' | 'failed';
+type Bucket = 'active' | 'mediation' | 'stalled' | 'completed' | 'failed' | 'cancelled';
 const BUCKETS: { id: Bucket; label: string }[] = [
   { id: 'active', label: 'Active' },
   { id: 'mediation', label: 'Mediation' },
   { id: 'stalled', label: 'Stalled' },
   { id: 'completed', label: 'Completed' },
   { id: 'failed', label: 'Failed' },
+  { id: 'cancelled', label: 'Cancelled' },
 ];
 const DEFAULT: Bucket[] = ['active', 'mediation', 'stalled'];
 const PAGE = 24;
@@ -18,13 +19,14 @@ const PAGE = 24;
 function bucketOf(q: Quest): Bucket {
   if (q.rawStatus === 'completed') return 'completed';
   if (q.rawStatus === 'failed') return 'failed';
+  if (q.rawStatus === 'cancelled') return 'cancelled';
   if (q.stale) return 'stalled';
   return q.status === 'mediation' ? 'mediation' : 'active';
 }
 
 const PILL: Record<string, AgentState> = {
   pending: 'thinking', decomposed: 'executing', implemented: 'executing',
-  testing_failed: 'mediating', completed: 'complete', failed: 'blocked',
+  testing_failed: 'mediating', completed: 'complete', failed: 'blocked', cancelled: 'idle',
 };
 
 function parse(search: string) {
@@ -55,7 +57,7 @@ export function QuestsView() {
 
   const quests = useMemo(() => snapshot?.quests ?? [], [snapshot]);
   const counts = useMemo(() => {
-    const c: Record<Bucket, number> = { active: 0, mediation: 0, stalled: 0, completed: 0, failed: 0 };
+    const c: Record<Bucket, number> = { active: 0, mediation: 0, stalled: 0, completed: 0, failed: 0, cancelled: 0 };
     for (const q of quests) c[bucketOf(q)]++;
     return c;
   }, [quests]);
@@ -117,7 +119,8 @@ export function QuestsView() {
                     meta={`opened ${ago(q.createdAt, now)} · ${q.iterations} iteration${q.iterations === 1 ? '' : 's'}`}
                     open={isOpen} selected={isOpen} onToggle={() => toggleQuest(q.id)}>
                     {q.summary && q.summary.replace(/\s+/g, ' ') !== q.title && <p className="quest-summary">{q.summary}</p>}
-                    {q.failure && <p className="quest-failure"><b>Why it stopped:</b> <code>{q.failure}</code></p>}
+                    {q.cause && <p className="quest-cause"><span className="ex-pill" data-state="blocked">root cause</span> {snapshot.causes?.[q.cause] ?? q.cause}</p>}
+                    {q.failure && <p className="quest-failure"><b>{q.rawStatus === 'cancelled' ? 'Why it was cancelled:' : 'Last error:'}</b> <code>{q.failure}</code></p>}
                     {q.seats.map((s) => {
                       const k = roster.find((r) => r.id === s.knight);
                       return <KnightProgressRow key={s.knight} name={k?.name ?? s.knight} role={k?.role ?? ''} state={s.state} stalled={q.stale} />;

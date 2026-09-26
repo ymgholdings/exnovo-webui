@@ -9,15 +9,16 @@ export interface Quest {
   id: number; title: string; rawStatus: string;
   status: 'active' | 'mediation' | 'archived';
   iterations: number; createdAt: string | null; stale: boolean;
-  summary: string; failure: string | null; seats: Seat[];
+  summary: string; failure: string | null; cause: string | null; seats: Seat[];
 }
 export interface Summary {
-  total: number; open: number; stalled: number; mediation: number; completed: number; failed: number;
+  total: number; open: number; stalled: number; mediation: number; completed: number; failed: number; cancelled: number;
+  causes: Record<string, number>;
   successRate: number | null; knights: number; lastActivityAt: string | null; lastActivityAgeHours: number | null;
 }
 export interface Knight { id: string; name: string; role: string; }
 export interface Health { db: 'up' | 'down'; error: string | null; lastPollAt: string | null; }
-export interface Snapshot { quests: Quest[]; summary: Summary; roster: Knight[]; health: Health; }
+export interface Snapshot { quests: Quest[]; summary: Summary; roster: Knight[]; causes: Record<string, string>; health: Health; }
 
 export type ActivityKind = 'initialized' | 'progress' | 'conflict' | 'resolved' | 'complete' | 'failed';
 export interface Activity { id: string; kind: ActivityKind; questId: number; title: string; status: string; at: string; live: boolean; }
@@ -30,6 +31,7 @@ const FEED_MAX = 30;
 export function kindFor(rawStatus: string, isNew: boolean): ActivityKind {
   if (rawStatus === 'completed') return 'complete';
   if (rawStatus === 'failed') return 'failed';
+  if (rawStatus === 'cancelled') return 'resolved';
   if (rawStatus === 'testing_failed') return 'conflict';
   if (isNew || rawStatus === 'pending') return 'initialized';
   return 'progress';
@@ -37,7 +39,7 @@ export function kindFor(rawStatus: string, isNew: boolean): ActivityKind {
 
 const STATUS_WORD: Record<string, string> = {
   pending: 'queued', decomposed: 'planned', implemented: 'implemented',
-  testing_failed: 'tests failed', completed: 'completed', failed: 'failed',
+  testing_failed: 'tests failed', completed: 'completed', failed: 'failed', cancelled: 'cancelled',
 };
 export const statusWord = (s: string) => STATUS_WORD[s] ?? s.replace(/_/g, ' ');
 
