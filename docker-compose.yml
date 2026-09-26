@@ -1,0 +1,29 @@
+# Exnovo Agentic OS web server: built UI + read-only quest API.
+# Reachable on the tailnet only (bound to the Tailscale address), never the public interface.
+# Deploy: npm run build && docker compose up -d   ·   Logs: docker logs -f exnovo-webui
+services:
+  exnovo-webui:
+    image: node:22-alpine
+    container_name: exnovo-webui
+    working_dir: /app
+    command: ["node", "server/index.mjs"]
+    network_mode: host            # reaches Postgres on 127.0.0.1:5432 and binds the tailnet IP directly
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      HOST: 100.64.153.76
+      PORT: "5180"
+      DIST: /app/dist
+      POLL_MS: "3000"
+    env_file:
+      - /home/claude-ops/netcup-mcp/keys/exnovo-api.env   # PGHOST/PGUSER/PGPASSWORD/PGDATABASE for the read-only role
+    volumes:
+      - /opt/exnovo-webui:/app:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://100.64.153.76:5180/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

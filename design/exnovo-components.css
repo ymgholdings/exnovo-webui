@@ -34,6 +34,8 @@ body { margin: 0; font-size: 17px; line-height: 24px; font-weight: 500; -webkit-
 .ex-panel--regal { --edge: var(--regal); filter: drop-shadow(var(--glow-regal-1)); }
 .ex-panel--aether { --edge: var(--aether); --fill: #0F1F2A; filter: drop-shadow(var(--glow-aether-2)); }
 .ex-panel--selected { --fill: var(--panel-raised); filter: drop-shadow(var(--glow-regal-3)); }
+.ex-panel--warn { --edge: var(--status-warn); filter: none; }
+.ex-panel--critical { --edge: var(--status-critical); filter: none; }
 .ex-panel--inset { --fill: var(--panel-inset); --cut: var(--cut-sm); }
 @media (hover: hover) {
   .ex-panel--arcane:hover { filter: drop-shadow(var(--glow-arcane-2)); }
@@ -143,7 +145,7 @@ body { margin: 0; font-size: 17px; line-height: 24px; font-weight: 500; -webkit-
 .ex-feed__dot[data-tone="warn"] { border-color: var(--status-warn); box-shadow: none; }
 .ex-feed__dot[data-tone="critical"] { border-color: var(--status-critical); box-shadow: none; }
 .ex-feed__title { margin: 0; font-size: 18px; line-height: 24px; letter-spacing: .03em; text-transform: uppercase; color: var(--ink); }
-.ex-feed__meta { font-size: 15px; line-height: 20px; color: var(--ink-3); display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.ex-feed__meta { font-size: 15px; line-height: 20px; color: var(--ink-3); display: flex; flex-direction: column; gap: 2px; }
 .ex-feed__meta b { font-weight: 500; color: var(--ink-2); }
 
 /* ---------- KnightCard ---------- */

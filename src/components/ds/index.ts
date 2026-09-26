@@ -6,3 +6,6 @@ export { TopBar } from './TopBar';
 export { SideNav } from './SideNav';
 export type { NavItem } from './SideNav';
 export type { Tone, AgentState } from './types';
+export { RoundTable } from './RoundTable';
+export type { RoundTableQuest } from './RoundTable';
+export { ActivityFeed } from './ActivityFeed';
