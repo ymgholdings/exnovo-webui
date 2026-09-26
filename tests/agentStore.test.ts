@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { applySnapshot, kindFor, type AgentStoreState, type Snapshot, type Quest } from '../src/lib/agentStore.ts';
 
 const q = (id: number, rawStatus: string, createdAt = '2026-09-18T00:00:00.000Z'): Quest => ({
-  id, title: `Q${id}`, rawStatus, status: 'active', iterations: 0, createdAt, stale: false, seats: [],
+  id, title: `Q${id}`, rawStatus, status: 'active', iterations: 0, createdAt, stale: false, summary: '', failure: null, seats: [],
 });
 const snap = (quests: Quest[]): Snapshot => ({
   quests, roster: [], health: { db: 'up', error: null, lastPollAt: null },

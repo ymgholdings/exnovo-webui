@@ -10,6 +10,7 @@ interface PanelProps {
   className?: string;
   children: ReactNode;
   'aria-label'?: string;
+  'data-open'?: string;
 }
 
 export function Panel({ tone, selected, flat, inset, as: Tag = 'div', className, children, ...rest }: PanelProps) {

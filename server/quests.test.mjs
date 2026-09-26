@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { titleFromSpec, toQuest, summarize, fingerprint, ROSTER, asUtc } from './quests.mjs';
+import { titleFromSpec, toQuest, summarize, fingerprint, ROSTER, asUtc, excerpt, failureReason } from './quests.mjs';
 
 test('title skips rule lines and trims', () => {
   assert.equal(titleFromSpec('====\n\n  Deploy hermes-webui  \nmore'), 'Deploy hermes-webui');
@@ -55,11 +55,11 @@ test('fingerprint changes only when status or iterations change', () => {
   assert.notEqual(fingerprint(a), fingerprint(c));
 });
 
-test('open quests past STALE_HOURS go stale with idle seats; archived never stale', () => {
+test('open quests past STALE_HOURS go stale but keep where they stopped; archived never stale', () => {
   const now = Date.parse('2026-09-25T00:00:00Z');
   const open = toQuest({ id: 1, status: 'implemented', created_at: '2026-09-13T00:00:00Z' }, now);
   assert.equal(open.stale, true);
-  assert.ok(open.seats.every((s) => s.state === 'idle'));
+  assert.deepEqual(open.seats.map((s) => s.state), ['complete', 'complete', 'executing', 'executing']);
   const done = toQuest({ id: 2, status: 'completed', created_at: '2026-09-13T00:00:00Z' }, now);
   assert.equal(done.stale, false);
   assert.equal(done.seats[0].state, 'complete');
@@ -70,4 +70,16 @@ test('naive timestamps are read as UTC', () => {
   assert.equal(asUtc('2026-09-19T17:39:50Z'), '2026-09-19T17:39:50Z');
   assert.equal(asUtc('2026-09-19T17:39:50+02:00'), '2026-09-19T17:39:50+02:00');
   assert.equal(toQuest({ id: 1, status: 'pending', created_at: '2026-09-19T17:39:50' }).createdAt, '2026-09-19T17:39:50.000Z');
+});
+
+test('excerpt drops rule lines and caps length', () => {
+  assert.equal(excerpt('====\nDo it\n\n\n\nnow'), 'Do it\n\nnow');
+  assert.equal(excerpt('x'.repeat(500)).length, 420);
+});
+
+test('failure reason is the last meaningful trace line, only for failures', () => {
+  assert.equal(failureReason('Traceback\n  File x\nAssertionError: 3 != 4\n---\n'), 'AssertionError: 3 != 4');
+  assert.equal(failureReason(''), null);
+  assert.equal(toQuest({ id: 1, status: 'failed', error_trace: 'boom' }).failure, 'boom');
+  assert.equal(toQuest({ id: 1, status: 'completed', error_trace: 'old' }).failure, null);
 });

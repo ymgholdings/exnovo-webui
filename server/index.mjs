@@ -31,7 +31,7 @@ async function poll() {
   try {
     const rows = FIXTURE
       ? JSON.parse(await readFile(FIXTURE, 'utf8'))
-      : (await pool.query('SELECT id, spec, status, iteration_count, created_at FROM tasks ORDER BY created_at DESC LIMIT 500')).rows;
+      : (await pool.query('SELECT id, spec, status, iteration_count, created_at, right(error_trace, 2000) AS error_trace FROM tasks ORDER BY created_at DESC LIMIT 500')).rows;
     const now = Date.now();
     quests = rows.map((r) => toQuest(r, now));
     dbOk = true;

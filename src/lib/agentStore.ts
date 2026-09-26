@@ -8,7 +8,8 @@ export interface Seat { knight: string; state: AgentState; }
 export interface Quest {
   id: number; title: string; rawStatus: string;
   status: 'active' | 'mediation' | 'archived';
-  iterations: number; createdAt: string | null; stale: boolean; seats: Seat[];
+  iterations: number; createdAt: string | null; stale: boolean;
+  summary: string; failure: string | null; seats: Seat[];
 }
 export interface Summary {
   total: number; open: number; stalled: number; mediation: number; completed: number; failed: number;

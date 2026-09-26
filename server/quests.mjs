@@ -40,6 +40,19 @@ export function titleFromSpec(spec) {
   return clean.length > 72 ? clean.slice(0, 71).trimEnd() + '…' : clean;
 }
 
+/** A readable excerpt of the full spec for the quest detail view. */
+export function excerpt(text, max = 420) {
+  const t = String(text ?? '').replace(/^[=\-#*_\s]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+  return t.length > max ? t.slice(0, max - 1).trimEnd() + '…' : t;
+}
+
+/** The last meaningful line of an error trace: usually the exception that ended the run. */
+export function failureReason(trace, max = 240) {
+  const lines = String(trace ?? '').split('\n').map((l) => l.trim()).filter((l) => l && !/^[=\-~^\s]+$/.test(l));
+  const last = lines.at(-1) ?? '';
+  return last.length > max ? last.slice(0, max - 1).trimEnd() + '…' : last || null;
+}
+
 /** Agentic OS stores `timestamp without time zone` in UTC; a naive string must not be read as local time. */
 export function asUtc(v) {
   if (typeof v !== 'string') return v;
@@ -61,7 +74,9 @@ export function toQuest(row, now = Date.now()) {
     iterations: Number(row.iteration_count ?? 0),
     createdAt: Number.isNaN(created.getTime()) ? null : created.toISOString(),
     stale,
-    seats: ROSTER.map((k, i) => ({ knight: k.id, state: stale ? 'idle' : seats[i] })),
+    summary: excerpt(row.spec),
+    failure: status === 'failed' || status === 'testing_failed' ? failureReason(row.error_trace) : null,
+    seats: ROSTER.map((k, i) => ({ knight: k.id, state: seats[i] })),
   };
 }
 

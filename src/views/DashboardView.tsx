@@ -1,6 +1,7 @@
 import { ActivityFeed, Panel, RoundTable, StatCard, type AgentState, type RoundTableQuest } from '../components/ds';
 import { useAgent, type Quest, type Knight } from '../lib/agentStore';
 import { ago, useNow } from '../lib/time';
+import { navigateTo } from '../lib/useRoute';
 
 const MAX_TABLES = 7;
 // Which seat state wins when summarising a knight across many quests.
@@ -65,7 +66,8 @@ export function DashboardView() {
             <h2>Quest network</h2>
             <span className="panel-note">{open.length ? `${open.length} open` : 'no open quests · showing recent'} · last new quest {lastNew}</span>
           </div>
-          <RoundTable hub={{ label: 'Orchestrator Arthur', seats: hubSeats(roster, open) }} quests={tables} overflow={overflow} />
+          <RoundTable hub={{ label: 'Orchestrator Arthur', seats: hubSeats(roster, open) }} quests={tables} overflow={overflow}
+            onSelect={(id) => navigateTo(`/quests?status=all&quest=${id}`)} />
           <div className="rt-legend">
             {(['idle', 'thinking', 'executing', 'mediating', 'blocked', 'complete'] as AgentState[]).map((s) => (
               <span key={s} className="ex-pill" data-state={s}>{s}</span>

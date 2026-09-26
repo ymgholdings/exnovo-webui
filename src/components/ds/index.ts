@@ -9,3 +9,7 @@ export type { Tone, AgentState } from './types';
 export { RoundTable } from './RoundTable';
 export type { RoundTableQuest } from './RoundTable';
 export { ActivityFeed } from './ActivityFeed';
+export { KnightProgressRow } from './KnightProgressRow';
+export { QuestCard } from './QuestCard';
+export { FilterGroup } from './FilterGroup';
+export type { FilterOption } from './FilterGroup';

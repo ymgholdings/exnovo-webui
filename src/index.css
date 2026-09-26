@@ -12,6 +12,7 @@
 }
 .app-frame .ex-topbar { position: sticky; top: 0; z-index: var(--z-sticky); }
 .app-body { display: grid; grid-template-columns: 120px 1fr; min-height: 0; }
+.app-body > .ex-sidenav { position: sticky; top: 77px; align-self: start; height: calc(100vh - 77px); }
 .app-main { padding: var(--space-8) var(--space-8) var(--space-10); display: grid; gap: var(--space-8); align-content: start; min-width: 0; }
 
 .view-head { display: grid; gap: var(--space-2); }
@@ -32,12 +33,30 @@
 .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
 .panel-head h2 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 400; letter-spacing: .04em; text-transform: uppercase; color: var(--regal); }
 .panel-note { font-family: var(--font-data); font-size: 12px; line-height: 16px; color: var(--ink-3); margin: 0; }
+.quests-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: var(--space-8); align-items: start; }
+.quests-filters { display: grid; gap: var(--space-4); position: sticky; top: calc(88px + env(safe-area-inset-top, 0px)); }
+.quests-main { display: grid; gap: var(--space-4); min-width: 0; }
+.quest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6); align-items: start; }
+.quest-cell { min-width: 0; scroll-margin-top: 96px; }
+.quest-cell--open { grid-column: 1 / -1; }
+.quest-summary { margin: 0; color: var(--ink-2); white-space: pre-line; max-width: 80ch; }
+.quest-failure { margin: 0; color: var(--ink-2); }
+.quest-failure b { color: var(--status-critical); font-weight: 600; }
+.quest-failure code { font-family: var(--font-data); font-size: 13px; color: var(--ink); overflow-wrap: anywhere; }
+.ex-quest__status { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.ex-check__count { margin-left: auto; font-family: var(--font-data); font-size: 12px; color: var(--ink-3); }
+.ex-check { width: 100%; }
+.quests-more { display: flex; justify-content: center; }
 .rt-legend { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
 
 @media (max-width: 1100px) {
   .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .two-col { grid-template-columns: 1fr; }
   .dash-grid { grid-template-columns: 1fr; }
+  .quests-layout { grid-template-columns: 1fr; gap: var(--space-4); }
+  .quests-filters { position: static; }
+  .quests-filters .ex-filter { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .quests-filters .ex-filter legend { grid-column: 1 / -1; }
 }
 
 @media (max-width: 720px) {
@@ -47,6 +66,7 @@
   .ex-topbar__title { font-size: 22px; line-height: 28px; }
   .app-body { grid-template-columns: 1fr; }
   .app-main { padding: var(--space-6) var(--space-4) calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .app-body > .ex-sidenav { height: auto; position: fixed; top: auto; align-self: auto; }
   .ex-sidenav {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-sticky);
     width: auto; flex-direction: row; justify-content: space-around;
@@ -61,4 +81,6 @@
   .ex-stat__label { font-size: 13px; letter-spacing: .06em; }
   .ex-stat__delta { font-size: 11px; }
   .immersive { height: 420px; }
+  .quest-grid { grid-template-columns: 1fr; }
+  .ex-check { font-size: 16px; }
 }
