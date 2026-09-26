@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "design_system": "Exnovo Round Table (claude.ai artifact CNA1NxkrvcKmfc6fmoC1np)",
+  "agent_states": ["idle", "thinking", "executing", "mediating", "blocked", "complete"],
+  "views": [
+    {
+      "route": "/",
+      "mockup": "Dashboard Overview",
+      "layout": "TopBar / SideNav / grid: StatCard x4 row, RoundTable (col 1-9), ActivityFeed (col 10-12)",
+      "regions": [
+        { "component": "StatCard", "label": "Active Quests", "tone": "arcane", "data": "GET /api/quests?status=active -> count", "status": "backend missing" },
+        { "component": "StatCard", "label": "Total Knights", "tone": "regal", "data": "GET /api/knights -> count", "status": "backend missing" },
+        { "component": "StatCard", "label": "Revenue Strategy", "tone": "regal", "data": "GET /api/strategy/summary -> {state: STABLE|GROWING|AT RISK, mrr_usd, delta_30d}", "status": "backend missing" },
+        { "component": "StatCard", "label": "System Status", "tone": "aether", "data": "GET /api/health -> {state: OPTIMAL|DEGRADED|DOWN, services_up, services_total, p95_ms}", "status": "backend missing" },
+        { "component": "RoundTable", "data": "SSE /api/streaming: subagent_0N_frame_change {state, message, delegated} -> seat state; quest list from /api/quests", "status": "SSE exists (api/streaming.py, stub data); quest list missing" },
+        { "component": "ActivityFeed", "data": "SSE /api/streaming: new event type 'activity' {id, kind, title, actors, cost_usd, at}", "status": "event type missing" }
+      ],
+      "mockup_errors_to_ignore": ["BASHBOARD", "KART NETWORK OVERVIEW", "CRCNESTRATOR", "DACHESTRATOR", "duplicate SaaS DEV rows", "'2 progress:' fragments"]
+    },
+    {
+      "route": "/quests",
+      "mockup": "Quest Management",
+      "layout": "TopBar / SideNav / FilterGroup rail (Status, Domain) / QuestCard grid, one selected + expanded",
+      "regions": [
+        { "component": "FilterGroup", "data": "URL query ?status=active&domain=coding" },
+        { "component": "QuestCard", "data": "GET /api/quests -> Quest[] (see components.d.ts)", "status": "backend missing" },
+        { "component": "KnightProgressRow", "data": "task ledger: subtasks_done / subtasks_planned per knight; SSE updates", "status": "backend missing" }
+      ],
+      "mockup_errors_to_ignore": ["Assigned in taskt", "CONFICT Strating (Acthor C)", "ARCHIVE heading over active quests", "duplicate Revenue Strategy cards"]
+    },
+    {
+      "route": "/round-table",
+      "mockup": "King Arthur's Round Table (network + close-up)",
+      "layout": "Full-width RoundTable; selecting a quest opens a drawer with its KnightCards and KnightProgressRows",
+      "regions": [
+        { "component": "RoundTable", "data": "as Dashboard" },
+        { "component": "KnightCard", "data": "GET /api/knights/:id (name, role, model, portrait, state)" }
+      ],
+      "notes": "The close-up mockup (knights at a table with code screens) is art direction for an optional Three.js view (existing src/components/RoundTableCanvas.tsx). Keep it behind a 'Immersive' toggle; SVG RoundTable is the default."
+    },
+    {
+      "route": "/strategy",
+      "mockup": "Advanced Materials & Strategy",
+      "layout": "Two paired columns: [PropertyList panel + KnightCard Tristan] [Revenue chart panel + KnightCard Lancelot]",
+      "regions": [
+        { "component": "PropertyList", "data": "Allotrope materials record", "status": "backend missing; mockup values are noise" },
+        { "component": "Panel(regal) + SVG chart", "data": "GET /api/strategy/revenue?months=12 -> [{month, revenue_usd, forecast_usd}]", "status": "backend missing; replaces RevenueEngineCanvas 3D bars as default" },
+        { "component": "KnightCard", "data": "Tristan (analysis), Lancelot (market data)" }
+      ],
+      "mockup_errors_to_ignore": ["Shannal Properties", "Colyamites", "Compositive properties", "Format: taxe", "Closau: Tnata", "treddeditive analysis", "decorative equations"]
+    }
+  ]
+}

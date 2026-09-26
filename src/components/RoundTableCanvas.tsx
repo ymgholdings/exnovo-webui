@@ -171,7 +171,7 @@ function DataStreams() {
             dashed
             dashScale={8}
             dashSize={0.3}
-            dashGap={0.15}
+            gapSize={0.15}
           />
         );
       })}

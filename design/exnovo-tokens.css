@@ -1,0 +1,96 @@
+/* Exnovo Round Table tokens — generated from the design system (tokens.json). Do not hand-edit values here; change the design system and regenerate. */
+/* Tailwind v4: @theme exposes utilities (bg-ground, text-regal, border-arcane, font-ui, shadow-glow-regal-2 …). */
+@theme static {
+  --color-void: #05080F; /* Outermost page edge and the vignette corners behind the app frame. Nev */
+  --color-ground: #0A1120; /* App background behind every panel. Text: ink, ink-2, ink-3, arcane, re */
+  --color-panel: #0F1829; /* Default panel fill (StatCard, QuestCard, feed container, SideNav). */
+  --color-panel-raised: #142036; /* Hovered or expanded panel, the active SideNav item, selected QuestCard */
+  --color-panel-inset: #0B1322; /* Wells inside a panel: feed rows, progress-row boxes, property lists, c */
+  --color-line: #22324D; /* Hairline dividers and chart gridlines. Decorative only (1.4:1); never  */
+  --color-line-strong: #3A5279; /* Neutral panel edge and inactive table rings. Decorative (2.3:1): toned */
+  --color-ink: #E8EEF7; /* Primary text and stat labels on ground, panel, panel-raised, panel-ins */
+  --color-ink-2: #AEBBD0; /* Secondary text: card subtitles, knight roles, nav labels at rest (≥8.3 */
+  --color-ink-3: #8392AB; /* Muted text: timestamps, captions, axis labels; also checkbox and input */
+  --color-arcane: #5AB4EE; /* Blue identity. Technical work: knights coding, analysing, researching; */
+  --color-arcane-bright: #9AD4FA; /* Blue numerals and headings on dark grounds (Active Quests value); holo */
+  --color-arcane-deep: #1D4B73; /* Blue fills behind blue text: progress track tint, selected filter chip */
+  --color-regal: #E0B062; /* Gold identity. The Orchestrator, strategy and revenue; section heading */
+  --color-regal-bright: #F3CE8C; /* Gold numerals (Total Knights, Revenue Strategy values) and the focus r */
+  --color-regal-deep: #5A4220; /* Gold fills: progress bar fill base, selected QuestCard header wash, na */
+  --color-aether: #54E1D6; /* Teal. System health and the one primary action per view (More…, Initia */
+  --color-aether-deep: #134846; /* Teal fill for the primary button hover and the OPTIMAL stat card wash. */
+  --color-on-aether: #062624; /* Text on a solid aether fill (10:1). */
+  --color-status-ok: var(--color-aether); /* Healthy / complete. Always paired with a word (OPTIMAL, COMPLETE). */
+  --color-status-info: var(--color-arcane); /* In progress / thinking. Always paired with a word. */
+  --color-status-warn: #F28C38; /* Degraded, over budget, awaiting mediation. Orange, darker than regal s */
+  --color-status-critical: #F2687A; /* Blocked, failed, security gate tripped (≥5.4:1). Always with a word or */
+  --color-focus: var(--color-regal-bright); /* 2px solid focus ring, offset 3px, on every interactive element. */
+  --font-ui: Rajdhani, "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+  --font-mark: Cinzel, "Trajan Pro", Georgia, serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-round: 999px;
+  --shadow-glow-arcane-1: 0 0 8px rgba(90, 180, 238, 0.28);
+  --shadow-glow-arcane-2: 0 0 18px rgba(90, 180, 238, 0.42);
+  --shadow-glow-arcane-3: 0 0 30px rgba(154, 212, 250, 0.55);
+  --shadow-glow-regal-1: 0 0 8px rgba(224, 176, 98, 0.26);
+  --shadow-glow-regal-2: 0 0 18px rgba(224, 176, 98, 0.40);
+  --shadow-glow-regal-3: 0 0 30px rgba(243, 206, 140, 0.55);
+  --shadow-glow-aether-2: 0 0 18px rgba(84, 225, 214, 0.40);
+}
+
+/* Plain custom properties used by exnovo-components.css */
+:root {
+  color-scheme: dark;
+  --void: var(--color-void);
+  --ground: var(--color-ground);
+  --panel: var(--color-panel);
+  --panel-raised: var(--color-panel-raised);
+  --panel-inset: var(--color-panel-inset);
+  --line: var(--color-line);
+  --line-strong: var(--color-line-strong);
+  --ink: var(--color-ink);
+  --ink-2: var(--color-ink-2);
+  --ink-3: var(--color-ink-3);
+  --arcane: var(--color-arcane);
+  --arcane-bright: var(--color-arcane-bright);
+  --arcane-deep: var(--color-arcane-deep);
+  --regal: var(--color-regal);
+  --regal-bright: var(--color-regal-bright);
+  --regal-deep: var(--color-regal-deep);
+  --aether: var(--color-aether);
+  --aether-deep: var(--color-aether-deep);
+  --on-aether: var(--color-on-aether);
+  --status-ok: var(--color-status-ok);
+  --status-info: var(--color-status-info);
+  --status-warn: var(--color-status-warn);
+  --status-critical: var(--color-status-critical);
+  --focus: var(--color-focus);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-none: 0px;
+  --radius-xs: 2px;
+  --radius-round: 999px;
+  --glow-arcane-1: 0 0 8px rgba(90, 180, 238, 0.28);
+  --glow-arcane-2: 0 0 18px rgba(90, 180, 238, 0.42);
+  --glow-arcane-3: 0 0 30px rgba(154, 212, 250, 0.55);
+  --glow-regal-1: 0 0 8px rgba(224, 176, 98, 0.26);
+  --glow-regal-2: 0 0 18px rgba(224, 176, 98, 0.40);
+  --glow-regal-3: 0 0 30px rgba(243, 206, 140, 0.55);
+  --glow-aether-2: 0 0 18px rgba(84, 225, 214, 0.40);
+  --cut-sm: 8px;
+  --cut-md: 14px;
+  --cut-lg: 22px;
+  --notch: 6px;
+  --z-base: 0;
+  --z-sticky: 20;
+  --z-overlay: 40;
+  --z-toast: 60;
+}
