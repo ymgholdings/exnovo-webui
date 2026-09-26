@@ -62,7 +62,12 @@ export function asUtc(v) {
 
 export function toQuest(row, now = Date.now()) {
   const status = String(row.status ?? 'pending');
-  const seats = SEATS[status] ?? ['idle', 'idle', 'idle', 'idle'];
+  // A failed run that iterated got through implementation and was rejected in review/testing:
+  // put the block on the Debugger, not the Orchestrator.
+  const iterated = Number(row.iteration_count ?? 0) > 0;
+  const seats = status === 'failed' && iterated
+    ? ['complete', 'complete', 'blocked', 'idle']
+    : SEATS[status] ?? ['idle', 'idle', 'idle', 'idle'];
   const created = row.created_at instanceof Date ? row.created_at : new Date(asUtc(row.created_at));
   const ageHours = Number.isNaN(created.getTime()) ? null : (now - created.getTime()) / 36e5;
   const stale = BUCKET[status] !== 'archived' && ageHours !== null && ageHours > STALE_HOURS;

@@ -83,3 +83,8 @@ test('failure reason is the last meaningful trace line, only for failures', () =
   assert.equal(toQuest({ id: 1, status: 'failed', error_trace: 'boom' }).failure, 'boom');
   assert.equal(toQuest({ id: 1, status: 'completed', error_trace: 'old' }).failure, null);
 });
+
+test('failed after iterating blocks the Debugger; failed with no iterations blocks Arthur', () => {
+  assert.deepEqual(toQuest({ id: 1, status: 'failed', iteration_count: 3 }).seats.map((s) => s.state), ['complete', 'complete', 'blocked', 'idle']);
+  assert.deepEqual(toQuest({ id: 2, status: 'failed', iteration_count: 0 }).seats.map((s) => s.state), ['blocked', 'idle', 'idle', 'idle']);
+});
