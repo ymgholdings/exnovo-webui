@@ -93,7 +93,7 @@ async function serveStatic(req, res, pathname) {
   }
 }
 
-const server = http.createServer(async (req, res) => {
+async function handle(req, res) {
   const { pathname } = new URL(req.url ?? '/', 'http://x');
   if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: 'read-only' });
 
@@ -111,11 +111,22 @@ const server = http.createServer(async (req, res) => {
   }
   if (pathname.startsWith('/api/')) return json(res, 404, { error: 'unknown endpoint' });
   return serveStatic(req, res, pathname);
-});
+}
+
+const server = http.createServer(handle);
 
 setInterval(() => { for (const res of clients) res.write(': heartbeat\n\n'); }, 15_000).unref();
 setInterval(poll, POLL_MS).unref();
 await poll();
 server.listen(PORT, HOST, () => console.log(`[exnovo] http://${HOST}:${PORT}  dist=${DIST}  db=${dbOk ? 'up' : 'down'}`));
+
+// Optional extra listeners (e.g. a Docker bridge gateway so the Homepage widget can read /api/summary).
+// Never fatal: if an address is missing (network not up yet) the main listener keeps serving.
+const extras = (process.env.EXTRA_HOSTS ?? '').split(',').map((h) => h.trim()).filter(Boolean);
+for (const h of extras) {
+  const s2 = http.createServer(handle);
+  s2.on('error', (e) => console.error(`[exnovo] extra listener ${h}:${PORT} unavailable: ${e.code}`));
+  s2.listen(PORT, h, () => console.log(`[exnovo] also on http://${h}:${PORT}`));
+}
 
 for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => { server.close(); pool.end().finally(() => process.exit(0)); });

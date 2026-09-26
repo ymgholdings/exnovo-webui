@@ -15,6 +15,7 @@ services:
     security_opt: ["no-new-privileges:true"]
     environment:
       HOST: 127.0.0.1
+      EXTRA_HOSTS: 172.21.0.1       # homepage_default bridge gateway: lets the Homepage tile widget read /api/summary (local containers only)
       PORT: "5180"
       DIST: /app/dist
       POLL_MS: "3000"
