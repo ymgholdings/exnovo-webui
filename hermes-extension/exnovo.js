@@ -97,7 +97,7 @@
   }
 
   window.Exnovo = window.Exnovo || {};
-  window.Exnovo.version = '0.4.0';
+  window.Exnovo.version = '0.4.1';
   window.Exnovo.addRailButton = addRailButton;
   window.Exnovo.mountPage = mountPage;
   /** One-shot pulse for state changes (respects reduced motion via CSS). */

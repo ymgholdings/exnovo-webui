@@ -276,8 +276,8 @@ body.ex-page-open .sidebar, body.ex-page-open #sidebarResize { display: none !im
 }
 
 /* ---------- Command Deck ---------- */
-.exd { max-width: 1480px; margin: 0 auto; padding: 22px 24px 36px; display: grid; gap: 22px; }
-.exd-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.exd { container-type: inline-size; max-width: 1480px; margin: 0 auto; padding: 22px 24px 36px; display: grid; gap: 22px; }
+.exd-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 22px; }
 .exd-card { --tone: var(--ex-arcane); --tone-glow: rgba(90,180,238,.45); --tone-bright: var(--ex-arcane-bright);
   filter: drop-shadow(0 0 10px var(--tone-glow)); transition: filter .3s var(--ex-ease); }
 .exd-card:hover { filter: drop-shadow(0 0 16px var(--tone-glow)); }
@@ -295,7 +295,7 @@ body.ex-page-open .sidebar, body.ex-page-open #sidebarResize { display: none !im
     linear-gradient(180deg, #13223A, #0C1628); }
 .exd-card-mark { position: absolute; inset: 18% 30%; background: url("exnovo-knot.webp") center / contain no-repeat; opacity: .07; pointer-events: none; }
 .exd-card-label { position: relative; font: 700 16px Rajdhani, system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ex-ink); }
-.exd-card-value { position: relative; font: 700 52px/1.05 Rajdhani, system-ui, sans-serif; color: var(--tone-bright); text-shadow: 0 0 18px var(--tone-glow); font-size-adjust: none; }
+.exd-card-value { position: relative; font: 700 52px/1.05 Rajdhani, system-ui, sans-serif; font-size: clamp(34px, 4.4cqi, 52px); overflow-wrap: anywhere; color: var(--tone-bright); text-shadow: 0 0 18px var(--tone-glow); font-size-adjust: none; }
 .exd-card-delta { position: relative; font: 500 12px "JetBrains Mono", ui-monospace, monospace; color: var(--ex-ink-3); font-size-adjust: none; }
 .exd-main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
 .exd-panel { background: linear-gradient(180deg, rgba(15,24,41,.92), rgba(10,17,32,.92)); border: 1px solid var(--ex-line-strong); padding: 16px 18px;
@@ -337,7 +337,8 @@ body.ex-page-open .sidebar, body.ex-page-open #sidebarResize { display: none !im
 .exd-ev-meta { font: 500 11px "JetBrains Mono", ui-monospace, monospace; color: var(--ex-ink-3); font-size-adjust: none; }
 .exd-empty { color: var(--ex-ink-2); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 @media (max-width: 1200px) { .exd-main { grid-template-columns: 1fr; } }
-@media (max-width: 900px) { .exd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } .exd-card-value { font-size: 40px; } .exd { padding: 14px; } }
+@container (max-width: 700px) { .exd-stats { gap: 14px; } }
+@media (max-width: 900px) { .exd { padding: 14px; } }
 @media (prefers-reduced-motion: reduce) { .exd-link-live { animation: none; } .exd-card { transition: none; } }
 :root[data-skin="exnovo"] .app-titlebar-icon { display: none; }
 .exd-radar { fill: none; stroke: rgba(84,225,214,.14); stroke-width: 1; stroke-dasharray: 1 7; }
