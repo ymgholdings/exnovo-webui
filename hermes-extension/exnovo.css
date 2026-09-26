@@ -1,0 +1,168 @@
+/* Exnovo Agentic OS — Hermes WebUI skin + extension styles.
+ *
+ * Everything is scoped to :root[data-skin="exnovo"], so choosing any other skin
+ * in Settings -> Appearance restores stock WebUI instantly.
+ * Tier 1: map Exnovo tokens onto WebUI's own design-token contract (upgrade-safe).
+ * Tier 2: scoped restyles of stable top-level surfaces only (no deep selector chains).
+ */
+
+/* ---------- fonts (self-hosted, OFL) ---------- */
+@font-face { font-family: "Rajdhani"; font-weight: 500; font-display: swap; src: url("fonts/rajdhani-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Rajdhani"; font-weight: 600; font-display: swap; src: url("fonts/rajdhani-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Rajdhani"; font-weight: 700; font-display: swap; src: url("fonts/rajdhani-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cinzel"; font-weight: 700; font-display: swap; src: url("fonts/cinzel-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: swap; src: url("fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); }
+
+/* ---------- Tier 1: tokens ---------- */
+:root[data-skin="exnovo"], :root.dark[data-skin="exnovo"] {
+  color-scheme: dark;
+  /* Exnovo palette (shared with the design system) */
+  --ex-void: #05080F; --ex-ground: #0A1120; --ex-panel: #0F1829; --ex-panel-raised: #142036; --ex-panel-inset: #0B1322;
+  --ex-line: #22324D; --ex-line-strong: #3A5279;
+  --ex-ink: #E8EEF7; --ex-ink-2: #AEBBD0; --ex-ink-3: #8392AB;
+  --ex-arcane: #5AB4EE; --ex-arcane-bright: #9AD4FA; --ex-arcane-deep: #1D4B73;
+  --ex-regal: #E0B062; --ex-regal-bright: #F3CE8C; --ex-regal-deep: #5A4220;
+  --ex-aether: #54E1D6; --ex-aether-deep: #134846; --ex-on-aether: #062624;
+  --ex-warn: #F28C38; --ex-critical: #F2687A;
+  --ex-cut: 8px; --ex-cut-lg: 14px;
+  --ex-ease: cubic-bezier(.2,.7,.2,1);
+
+  /* WebUI token contract */
+  --bg: var(--ex-ground); --sidebar: var(--ex-panel); --surface: var(--ex-panel); --surface2: var(--ex-panel-raised);
+  --surface-subtle: rgba(154,212,250,.03); --surface-subtle-hover: rgba(154,212,250,.06);
+  --border: var(--ex-line); --border2: var(--ex-line-strong); --border-subtle: rgba(58,82,121,.45); --border-muted: rgba(58,82,121,.7);
+  --text: var(--ex-ink); --text2: var(--ex-ink-2); --muted: var(--ex-ink-3); --strong: #F4F8FD; --em: var(--ex-ink-2);
+  --accent: var(--ex-regal); --accent-hover: var(--ex-regal-bright); --accent-text: var(--ex-regal-bright);
+  --accent-bg: rgba(224,176,98,.10); --accent-bg-strong: rgba(224,176,98,.18); --accent-rgb: 224, 176, 98;
+  --accent-contrast: #1A1206; --blue: var(--ex-arcane); --gold: var(--ex-regal); --link: var(--ex-arcane-bright);
+  --code-bg: var(--ex-panel-inset); --code-text: var(--ex-arcane-bright); --code-inline-bg: rgba(29,75,115,.45); --pre-text: #DCE6F2;
+  --topbar-bg: rgba(10,17,32,.96); --main-bg: rgba(10,17,32,.6);
+  --focus-ring: rgba(243,206,140,.55); --focus-glow: rgba(243,206,140,.12);
+  --input-bg: rgba(11,19,34,.9); --hover-bg: rgba(90,180,238,.08);
+  --error: var(--ex-critical); --danger: var(--ex-critical); --success: var(--ex-aether); --warning: var(--ex-warn); --info: var(--ex-arcane);
+  --user-bubble: var(--ex-panel-raised); --assistant-bubble: transparent;
+  --font-ui: Rajdhani, "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  /* Rajdhani is condensed: keep long-form prose in a reading face */
+  --font-conversation: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* ---------- Tier 2: scoped surfaces ---------- */
+/* Rajdhani has a small x-height: normalise its apparent size so 11-13px UI text stays legible. */
+:root[data-skin="exnovo"] body { font-size-adjust: 0.53; }
+:root[data-skin="exnovo"] .msg-body, :root[data-skin="exnovo"] pre, :root[data-skin="exnovo"] code { font-size-adjust: none; }
+
+:root[data-skin="exnovo"] body {
+  background:
+    radial-gradient(1200px 600px at 70% -10%, rgba(29,75,115,.28), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(90,66,32,.22), transparent 60%),
+    var(--ex-void);
+  letter-spacing: .01em;
+}
+
+/* Title bar: engraved, gold hairline */
+:root[data-skin="exnovo"] .app-titlebar {
+  background: linear-gradient(180deg, rgba(20,32,54,.96), rgba(10,17,32,.96));
+  border-bottom: 1px solid var(--ex-line);
+  box-shadow: inset 0 -1px 0 rgba(224,176,98,.18);
+}
+:root[data-skin="exnovo"] .app-titlebar-title {
+  font-family: Cinzel, Georgia, serif; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ex-regal-bright); font-size: 13px;
+}
+
+/* Rail + sidebar */
+:root[data-skin="exnovo"] .rail { background: var(--ex-panel-inset); border-right: 1px solid var(--ex-line); }
+:root[data-skin="exnovo"] .rail-btn { transition: color .18s var(--ex-ease), background .18s var(--ex-ease), box-shadow .18s var(--ex-ease); }
+:root[data-skin="exnovo"] .rail-btn:hover { color: var(--ex-arcane-bright); background: rgba(90,180,238,.08); }
+:root[data-skin="exnovo"] .rail-btn.active { color: var(--ex-regal-bright); background: rgba(224,176,98,.12); box-shadow: 0 0 12px rgba(224,176,98,.22); }
+:root[data-skin="exnovo"] .sidebar { background: linear-gradient(180deg, var(--ex-panel), var(--ex-panel-inset)); border-right: 1px solid var(--ex-line); }
+:root[data-skin="exnovo"] .panel-head {
+  font-family: var(--font-ui); font-weight: 700; font-size: 12px; letter-spacing: .16em; color: var(--ex-regal);
+  border-bottom: 1px solid var(--ex-line); box-shadow: inset 0 -1px 0 rgba(224,176,98,.10);
+}
+
+/* Main view headers */
+:root[data-skin="exnovo"] .main-view-header { border-bottom: 1px solid var(--ex-line); background: rgba(15,24,41,.6); }
+:root[data-skin="exnovo"] .main-view-title {
+  font-family: var(--font-ui); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ex-regal-bright);
+}
+
+/* Chamfered surfaces: suggestion cards, composer, settings rows, kanban cards, generic .card */
+:root[data-skin="exnovo"] .suggestion,
+:root[data-skin="exnovo"] #mainSettings .settings-field,
+:root[data-skin="exnovo"] .kanban-card,
+:root[data-skin="exnovo"] .card,
+:root[data-skin="exnovo"] .help-card {
+  border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--ex-cut)), calc(100% - var(--ex-cut)) 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(20,32,54,.92), rgba(15,24,41,.92));
+  border: 1px solid var(--ex-line-strong);
+}
+:root[data-skin="exnovo"] .suggestion { color: var(--ex-ink-2); transition: border-color .18s var(--ex-ease), color .18s var(--ex-ease), transform .18s var(--ex-ease); }
+:root[data-skin="exnovo"] .suggestion:hover { border-color: var(--ex-arcane); color: var(--ex-ink); transform: translateY(-1px); }
+
+/* Draw the diagonal edge that clip-path removes, so the border reads as continuous. */
+:root[data-skin="exnovo"] .suggestion,
+:root[data-skin="exnovo"] #mainSettings .settings-field,
+:root[data-skin="exnovo"] .kanban-card,
+:root[data-skin="exnovo"] .card,
+:root[data-skin="exnovo"] .help-card { position: relative; }
+:root[data-skin="exnovo"] .suggestion::after,
+:root[data-skin="exnovo"] #mainSettings .settings-field::after,
+:root[data-skin="exnovo"] .kanban-card::after,
+:root[data-skin="exnovo"] .card::after,
+:root[data-skin="exnovo"] .help-card::after {
+  content: ""; position: absolute; right: -1px; bottom: -1px; width: calc(var(--ex-cut) + 1px); height: calc(var(--ex-cut) + 1px);
+  pointer-events: none;
+  background: linear-gradient(to top left, transparent calc(50% - 1.2px), var(--ex-line-strong) calc(50% - 1.2px), var(--ex-line-strong) calc(50% + 0.2px), transparent calc(50% + 0.2px));
+}
+:root[data-skin="exnovo"] .suggestion:hover::after,
+:root[data-skin="exnovo"] .kanban-card:hover::after {
+  background: linear-gradient(to top left, transparent calc(50% - 1.2px), var(--ex-arcane) calc(50% - 1.2px), var(--ex-arcane) calc(50% + 0.2px), transparent calc(50% + 0.2px));
+}
+
+/* Composer: the command console (square corners, no clip-path: its popovers must not be clipped) */
+:root[data-skin="exnovo"] .composer-box { border-radius: 2px; background: linear-gradient(180deg, rgba(20,32,54,.94), rgba(15,24,41,.94)); border: 1px solid var(--ex-line-strong); border-color: var(--ex-line-strong); box-shadow: 0 0 0 1px rgba(224,176,98,.06), 0 12px 32px rgba(0,0,0,.35); }
+:root[data-skin="exnovo"] .composer-box:focus-within { border-color: var(--ex-regal); box-shadow: 0 0 0 1px rgba(224,176,98,.25), 0 0 18px rgba(224,176,98,.18); }
+
+/* Messages */
+:root[data-skin="exnovo"] .msg-role { font-family: var(--font-ui); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 11px; color: var(--ex-arcane-bright); }
+
+/* Kanban: columns as ranks, cards as quest tablets */
+:root[data-skin="exnovo"] .kanban-column { background: rgba(11,19,34,.7); border: 1px solid var(--ex-line); border-radius: 0; }
+:root[data-skin="exnovo"] .kanban-column-head { font-family: var(--font-ui); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ex-regal); border-bottom: 1px solid var(--ex-line); }
+:root[data-skin="exnovo"] .kanban-card { transition: border-color .18s var(--ex-ease), box-shadow .18s var(--ex-ease); }
+:root[data-skin="exnovo"] .kanban-card:hover { border-color: var(--ex-arcane); box-shadow: 0 0 14px rgba(90,180,238,.22); }
+:root[data-skin="exnovo"] .kanban-card-title { font-family: var(--font-ui); font-weight: 600; font-size: 15px; color: var(--ex-ink); }
+:root[data-skin="exnovo"] .kanban-card-id { font-family: var(--font-mono); color: var(--ex-arcane); }
+
+/* Buttons: primary actions in aether (one per view), the rest outlined */
+:root[data-skin="exnovo"] .sm-btn, :root[data-skin="exnovo"] .btn, :root[data-skin="exnovo"] .settings-action-btn {
+  border-radius: 0; font-family: var(--font-ui); font-weight: 600; letter-spacing: .04em;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+}
+
+/* Focus: always visible, regal */
+:root[data-skin="exnovo"] :focus-visible { outline: 2px solid var(--ex-regal-bright); outline-offset: 2px; }
+
+/* Scrollbars */
+:root[data-skin="exnovo"] * { scrollbar-color: var(--ex-line-strong) transparent; }
+
+/* Exnovo mark (added by exnovo.js next to the title) */
+.ex-mark { display: none; }
+:root[data-skin="exnovo"] .ex-mark {
+  display: inline-block; margin-right: 8px; font-family: Cinzel, Georgia, serif; font-weight: 700; font-size: 12px;
+  letter-spacing: .18em; color: var(--ex-regal); text-shadow: 0 0 8px rgba(224,176,98,.35);
+}
+
+/* Motion: one-shot state pulse used by Exnovo panels (Round Table seats, etc.) */
+@keyframes ex-pulse { 0% { box-shadow: 0 0 0 0 rgba(224,176,98,.55); } 100% { box-shadow: 0 0 0 14px rgba(224,176,98,0); } }
+:root[data-skin="exnovo"] .ex-pulse { animation: ex-pulse .9s var(--ex-ease) 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-skin="exnovo"] *, :root[data-skin="exnovo"] *::before, :root[data-skin="exnovo"] *::after {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important;
+  }
+  :root[data-skin="exnovo"] .suggestion:hover { transform: none; }
+}
