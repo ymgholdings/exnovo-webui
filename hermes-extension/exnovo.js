@@ -31,7 +31,15 @@
     title.insertBefore(mark, title.firstChild);
   }
 
+  function loadPanels() {
+    if (document.querySelector('script[data-exnovo="roundtable"]')) return;
+    var s = document.createElement('script');
+    s.src = '/extensions/roundtable.js?v=' + window.Exnovo.version; s.defer = true; s.dataset.exnovo = 'roundtable';
+    document.body.appendChild(s);
+  }
+
   function boot() {
+    loadPanels();
     if (!register()) {                     // core may load after us: retry briefly
       var n = 0, t = setInterval(function () { if (register() || ++n > 40) clearInterval(t); }, 100);
     }
@@ -42,7 +50,7 @@
   }
 
   window.Exnovo = window.Exnovo || {};
-  window.Exnovo.version = '0.1.0';
+  window.Exnovo.version = '0.2.0';
   /** One-shot pulse for state changes (respects reduced motion via CSS). */
   window.Exnovo.pulse = function (el) {
     if (!el) return; el.classList.remove('ex-pulse'); void el.offsetWidth; el.classList.add('ex-pulse');
